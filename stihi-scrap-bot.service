@@ -1,0 +1,17 @@
+[Unit]
+Description=Telegram bot stihi-scrapbot
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/stihi-scrap-bot/venv/bin
+ExecStart=/root/stihi-scrap-bot/venv/bin/python3 /root/stihi-scrap-bot/app.py
+RestartSec=20
+Restart=always
+KillMode=control-group
+EnvironmentFile=/root/stihi-scrap-bot/.env
+
+[Install]
+WantedBy=multi-user.target
