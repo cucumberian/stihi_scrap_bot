@@ -22,6 +22,7 @@ import traceback
 from werkzeug.utils import secure_filename
 
 URL = 'https://stihi.ru'
+BASE_DIR = '/tmp'
 
 
 def del_file(file: str):
@@ -313,24 +314,26 @@ def default_mesage(message):
         # print(f"{i+1}/{len(df)} ({(i+1)/(len(df))*100:3.2f}%) complete{none_result}")
 
     df['poem'] = poems
-    poems_filename = f"{author_header}.csv"
-    poems_filename_excel = f"{author_header}.xls"
+    poems_filename = os.path.join(BASE_DIR, f"{author_header}.csv")
+    poems_filename_excel = os.path.join(BASE_DIR, f"{author_header}.xls")
 
     df.to_csv(poems_filename, index=False)
     df.to_excel(poems_filename_excel, index=False)
 
-    os.makedirs(name=f"./{author_header}", exist_ok=True)
+
+    directory = os.path.join(BASE_DIR, f"./{author_header}")
+    os.makedirs(name=directory, exist_ok=True)
 
     for i in range(len(df)):
         title = df.loc[i, 'title']
         text_data = df.loc[i, 'poem']
-        with open(file=f"./{author_header}/{i}_{title}.txt", mode='wt', encoding='utf8') as f:
+        with open(file=os.path.join(BASE_DIR, f"./{author_header}/{i}_{title}.txt"), mode='wt', encoding='utf8') as f:
             f.write(text_data)
 
 
-    filename = '_'.join(author_header.split())
+    filename = os.path.join(BASE_DIR, '_'.join(author_header.split()))
     format = 'zip'
-    directory = f"./{author_header}"
+    
 
     # создаю архив из директории и удаляю директорию 
     try:
@@ -353,7 +356,7 @@ def default_mesage(message):
     )
     print(f"start generate pdf for {author_name} {author_title}")
     print(f"генерация pdf")
-    pdf_filename = '_'.join(author_name.split())
+    pdf_filename = os.path.join(BASE_DIR, '_'.join(author_name.split()))
 
     # не знаю почему, но правильно оглавление получается с 4й попытке
     for i in range(5):
@@ -405,7 +408,7 @@ def get_document(message):
     # сохраняем файл
     file_info = bot.get_file(file_id=file_id)
     downloaded_file = bot.download_file(file_info.file_path)
-    secure_file_name = secure_filename(file_info.file_path)
+    secure_file_name = os.path.join(BASE_DIR, secure_filename(file_info.file_path))
     print(f"{file_info.file_path = }, {secure_file_name = }\n")
     with open(file=secure_file_name, mode='wb') as f:
         f.write(downloaded_file)
@@ -432,8 +435,8 @@ def get_document(message):
     del_file(file=secure_file_name)     # удаляю файл
     
 
-    author_name = ' '.join([i.capitalize() for i in purename.split(' ')])
-    pdf_filename = "_".join(author_name.casefold().split())     
+    author_name = os.path.join(BASE_DIR, ' '.join([i.capitalize() for i in purename.split(' ')]))
+    pdf_filename = os.path.join(BASE_DIR, "_".join(author_name.casefold().split()))
     print(f"\n{author_name = }, {pdf_filename = }\n")
 
     for i in range(5):  # я не знаю почему, но правиьное оглавление формируется тоько на 4ю попытку
