@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  stihi-scrap:
+    build: src/
+    environment:
+      - TEL_API_TOKEN=${TEL_API_TOKEN}
+    restart: always
