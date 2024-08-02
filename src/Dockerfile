@@ -1,4 +1,4 @@
-from python:3.10-slim
+from python:3.12-slim
 
 run apt-get update
 run apt-get install texlive-fonts-recommended -y
@@ -6,12 +6,16 @@ run apt-get install texlive-lang-cyrillic -y
 run apt-get install texlive-latex-extra -y
 run apt clean && rm -rf /var/lib/apt/lists/*
 
-run mkdir -p /usr/src/app/
-workdir /usr/src/app/
+ENV APP_HOME=/usr/src/app
 
-copy app.py requirements.txt /usr/src/app/
+RUN mkdir -p ${APP_HOME}
+WORKDIR ${APP_HOME}
 
-run python3 -m pip install --upgrade pip
-run pip3 install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY app.py .
 
 cmd ["python3", "app.py"]
